@@ -1,4 +1,4 @@
-from src.game import main
+from src.main import main
 
 from asciimatics.screen import Screen
 

@@ -1,10 +1,12 @@
-from typing import Sequence
-from src.enum import PLAYER_ACTIONS, BaseEnemy
+from src.enum import PLAYER_ACTIONS, GameState
 
 from random import randint
 
 
-def nearest_shot(screen_size: tuple[int, int], position: tuple[int, int], enemies: Sequence[BaseEnemy]) -> PLAYER_ACTIONS:
+def nearest_shot(game_state: GameState) -> PLAYER_ACTIONS:
+    enemies = game_state["enemies"]
+    position = game_state["player"]["position"]
+
     if not enemies:
         return "none"
 
@@ -27,8 +29,8 @@ def nearest_shot(screen_size: tuple[int, int], position: tuple[int, int], enemie
 
     predict_bullet_shoot_pos += randint(-most_near_enemy.move_count, most_near_enemy.move_count)  # 少しランダム要素を加える
 
-    if predict_bullet_shoot_pos < 0 or predict_bullet_shoot_pos >= screen_size[0]:
-        if position[0] == 0 or position[0] == screen_size[0] - 1:
+    if predict_bullet_shoot_pos < 0 or predict_bullet_shoot_pos >= game_state["screen_size"][0]:
+        if position[0] == 0 or position[0] == game_state["screen_size"][0] - 1:
             return "shoot"
 
     if predict_bullet_shoot_pos < position[0]:

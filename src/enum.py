@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, TypedDict
 
 
 PLAYER_ACTIONS = Literal["left", "right", "shoot", "none"]
@@ -15,3 +15,17 @@ class BaseEnemy:
 
     def move(self, width: int) -> None:
         raise NotImplementedError
+
+
+class PlayerState(TypedDict):
+    position: tuple[int, int]
+    bullet_cooldown: int
+
+
+class GameState(TypedDict):
+    screen_size: tuple[int, int]
+    deadline: int
+    player: PlayerState
+    enemies: list[BaseEnemy]
+    bullets: list[tuple[int, int]]
+    scores: list[int]

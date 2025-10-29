@@ -1,21 +1,45 @@
+from uuid import uuid4
+from abc import ABC, abstractmethod
+
+
 from typing import Literal, TypedDict
 
 
 PLAYER_ACTIONS = Literal["left", "right", "shoot", "none"]
 
 
-class BaseEnemy:
+class BaseEnemy(ABC):
     hitpoint: int
     position: tuple[int, int]
     move_direction: Literal["left", "right", "down"]
     move_distance: int
     move_count: int
-    moved_count: int
     base_score: int
-    current_count: int
+
+    _moved_count: int
+    _id: str
+
+    def __init__(self) -> None:
+        self._moved_count = 0
+        self._id = uuid4().hex
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def moved_count(self) -> int:
+        return self._moved_count
 
     def move(self, width: int) -> None:
-        raise NotImplementedError
+        self._moved_count += 1
+
+        if self._moved_count % self.move_count == 0:
+            self._move(width)
+
+    @abstractmethod
+    def _move(self, width: int) -> None:
+        ...
 
 
 class BasePlayerStrategy:

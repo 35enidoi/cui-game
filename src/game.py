@@ -107,7 +107,8 @@ def main(screen: Screen, sleep_time: float) -> None:
     while not game.is_game_over:
         screen.clear_buffer(COLOUR_WHITE, 0, 0)
 
-        game.emuration_step(player)
+        player = player_strategys["midareuti"]
+        game.emuration_step(player.decide_action)
 
         screen.print_at(
             f"Score: {sum(game.gamestate['scores'])}",

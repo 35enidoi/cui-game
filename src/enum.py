@@ -18,6 +18,16 @@ class BaseEnemy:
         raise NotImplementedError
 
 
+class BasePlayerStrategy:
+    description: str
+
+    def __init__(self) -> None:
+        pass
+
+    def decide_action(self, game_state: "GameState") -> PLAYER_ACTIONS:
+        raise NotImplementedError
+
+
 class PlayerState(TypedDict):
     position: tuple[int, int]
     bullet_cooldown: int

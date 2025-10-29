@@ -1,4 +1,4 @@
-from src.enum import BaseEnemy
+from src.type.abstracts import BaseEnemy
 
 
 class InvaderEnemy(BaseEnemy):

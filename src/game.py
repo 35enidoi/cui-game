@@ -5,7 +5,8 @@ from random import shuffle
 from asciimatics.screen import Screen
 from asciimatics.constants import COLOUR_WHITE
 
-from src.enum import PLAYER_ACTIONS, BaseEnemy, GameState
+from src.type.constants import PLAYER_ACTIONS, GameState
+from src.type.abstracts import BaseEnemy
 from src.enemy import InvaderEnemy
 from src.player import player_strategys
 

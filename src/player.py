@@ -1,6 +1,6 @@
 from random import randint
 
-from src.enum import BasePlayerStrategy, BaseEnemy
+from src.type.abstracts import BasePlayerStrategy, BaseEnemy
 
 
 class TekitouStrategy(BasePlayerStrategy):

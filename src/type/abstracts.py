@@ -41,11 +41,12 @@ class BaseEnemy(ABC):
         ...
 
 
-class BasePlayerStrategy:
+class BasePlayerStrategy(ABC):
     description: str
 
     def __init__(self) -> None:
         pass
 
+    @abstractmethod
     def decide_action(self, game_state: "GameState") -> PLAYER_ACTIONS:
         raise NotImplementedError

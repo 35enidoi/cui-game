@@ -1,6 +1,4 @@
 from random import randint
-from typing import Literal
-
 
 from src.enum import PLAYER_ACTIONS, GameState
 
@@ -54,10 +52,9 @@ class Midareuti:
         if self.count % 2:
             return "shoot"
 
-        if game_state["player"]["position"][0] != 0 and game_state["player"]["position"][0] != game_state["screen_size"][0] - 1:
-            return self.directions[self.direction_count % 2]
+        if game_state["player"]["position"][0] == 0 or game_state["player"]["position"][0] == game_state["screen_size"][0] - 1:
+            self.direction_count += 1
 
-        self.direction_count += 1
         return self.directions[self.direction_count % 2]
 
 

@@ -121,4 +121,3 @@ def main(screen: Screen, sleep_time: float) -> None:
     screen.close()
 
     print("Game Over! Your score:", sum(game.gamestate["scores"]))
-

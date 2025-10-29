@@ -4,4 +4,7 @@ from asciimatics.screen import Screen
 
 
 if __name__ == "__main__":
-    Screen.wrapper(main, arguments=[0.01])
+    try:
+        Screen.wrapper(main, arguments=[0.01])
+    except KeyboardInterrupt:
+        pass

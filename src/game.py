@@ -1,10 +1,11 @@
 from typing import Callable
 from time import sleep
+from random import shuffle
 
 from asciimatics.screen import Screen
 from asciimatics.constants import COLOUR_WHITE
 
-from src.enum import PLAYER_ACTIONS, GameState
+from src.enum import PLAYER_ACTIONS, BaseEnemy, GameState
 from src.enemy import InvaderEnemy
 from src.player import player_strategys
 
@@ -16,7 +17,7 @@ class GameModel:
             screen_width: int) -> None:
         self.initialize_game((screen_width, screen_height))
 
-    def initialize_game(self, screen_size: tuple[int, int]) -> None:
+    def initialize_game(self, screen_size: tuple[int, int], enemy_count=10) -> None:
         self.gamestate: GameState = {
             "screen_size": screen_size,
             "deadline": 10,
@@ -24,13 +25,29 @@ class GameModel:
                 "position": (screen_size[0] // 2, 6),
                 "bullet_cooldown": 0
             },
-            "enemies": [
-                InvaderEnemy(x_position, screen_size[1] - 2)
-                for x_position in range(2, screen_size[0] - 2, 4)
-            ],
+            "enemies": self._enemy_initialization(screen_size, enemy_count),
             "bullets": [],
             "scores": []
         }
+
+    def _enemy_initialization(self, screen_size: tuple[int, int], enemy_count: int) -> list[BaseEnemy]:
+        screen_width, screen_height = screen_size
+        screen_positions = [
+            (x, screen_height - y) for x in range(screen_width) for y in range(10 if screen_height > 20 else screen_height // 4)
+        ]
+
+        shuffle(screen_positions)
+
+        if enemy_count > len(screen_positions):
+            enemy_count = len(screen_positions)
+
+        enemys = []
+
+        for _ in range(enemy_count):
+            x, y = screen_positions.pop()
+            enemys.append(InvaderEnemy(x, y))
+
+        return enemys
 
     @property
     def is_game_over(self) -> bool:
@@ -103,28 +120,39 @@ def screen_reverser(screen_y: int, position: tuple[int, int]) -> tuple[int, int]
 
 def main(screen: Screen, sleep_time: float) -> None:
     game = GameModel(screen.height, screen.width)
-    game.initialize_game((screen.width, screen.height))
-    while not game.is_game_over:
-        screen.clear_buffer(COLOUR_WHITE, 0, 0)
+    max_score = 0
 
-        player = player_strategys["midareuti"]
-        game.emuration_step(player.decide_action)
+    while True:
+        game.initialize_game(game.gamestate["screen_size"], enemy_count=40)
+        while not game.is_game_over:
+            screen.clear_buffer(COLOUR_WHITE, 0, 0)
 
-        screen.print_at(
-            f"Score: {sum(game.gamestate['scores'])}",
-            2,
-            0
-        )
+            player = player_strategys["midareuti"]
+            game.emuration_step(player.decide_action)
 
-        screen.print_at("A", *screen_reverser(screen.height, game.gamestate["player"]["position"]))
-        for enemy in game.gamestate["enemies"]:
-            screen.print_at("M", *screen_reverser(screen.height, enemy.position))
-        for bullet in game.gamestate["bullets"]:
-            screen.print_at("|", *screen_reverser(screen.height, bullet))
+            screen.print_at(
+                f"Score: {sum(game.gamestate['scores'])}",
+                2,
+                0
+            )
 
-        screen.refresh()
+            screen.print_at(
+                f"Max Score: {max_score}",
+                20,
+                0
+            )
 
-        sleep(sleep_time)
+            screen.print_at("A", *screen_reverser(screen.height, game.gamestate["player"]["position"]))
+            for enemy in game.gamestate["enemies"]:
+                screen.print_at("M", *screen_reverser(screen.height, enemy.position))
+            for bullet in game.gamestate["bullets"]:
+                screen.print_at("|", *screen_reverser(screen.height, bullet))
+
+            screen.refresh()
+
+            sleep(sleep_time)
+
+        max_score = sum(game.gamestate["scores"]) if sum(game.gamestate["scores"]) > max_score else max_score
 
     screen.close()
 

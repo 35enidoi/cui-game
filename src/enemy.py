@@ -11,8 +11,11 @@ class InvaderEnemy(BaseEnemy):
         self.move_distance = 1
         self.current_count = self.move_count
         self.base_score = 100
+        self.moved_count = 0
 
     def move(self, width: int) -> None:
+        self.moved_count += 1
+
         if self.current_count < 0:
             self.current_count = self.move_count
             x, y = self.position

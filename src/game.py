@@ -6,7 +6,7 @@ from asciimatics.constants import COLOUR_WHITE
 
 from src.enum import PLAYER_ACTIONS, GameState
 from src.enemy import InvaderEnemy
-from src.player import player
+from src.player import player_strategys
 
 
 class GameModel:
@@ -80,7 +80,14 @@ class GameModel:
                     enemy.hitpoint -= 10
                     if enemy.hitpoint <= 0:
                         self.gamestate["enemies"].pop(enemy_index)
-                        self.gamestate["scores"].append(enemy.base_score + 10 * (new_bullet_y - self.gamestate["deadline"]))
+
+                        # スコア計算
+                        if enemy.base_score >= 50 and enemy.moved_count <= 150:
+                            bonus_score = (enemy.base_score // 50) * (150 - enemy.moved_count)
+                        else:
+                            bonus_score = 0
+
+                        self.gamestate["scores"].append(enemy.base_score + bonus_score)
                     break
             else:
                 # 命中しなかった弾は次の位置に移動

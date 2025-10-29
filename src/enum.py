@@ -10,6 +10,7 @@ class BaseEnemy:
     move_direction: Literal["left", "right", "down"]
     move_distance: int
     move_count: int
+    moved_count: int
     base_score: int
     current_count: int
 

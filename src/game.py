@@ -58,8 +58,9 @@ class GameModel:
         else:
             return False
 
-    def emuration_step(self, player_strategy: Callable[[GameState], PLAYER_ACTIONS]) -> None:
+    def emuration_step(self, player_strategy: Callable[[GameState], PLAYER_ACTIONS]) -> list[tuple[BaseEnemy, int]]:
         # プレイヤーの行動決定と実行
+        destoroyed_enemys: list[tuple[BaseEnemy, int]] = []
         player_action = player_strategy(self.gamestate)
 
         match player_action:
@@ -105,12 +106,15 @@ class GameModel:
                             bonus_score = 0
 
                         self.gamestate["scores"].append(enemy.base_score + bonus_score)
+                        destoroyed_enemys.append((enemy, enemy.base_score + bonus_score))
                     break
             else:
                 # 命中しなかった弾は次の位置に移動
                 new_bullets.append((bullet[0], new_bullet_y))
 
         self.gamestate["bullets"] = new_bullets
+
+        return destoroyed_enemys
 
 
 def screen_reverser(screen_y: int, position: tuple[int, int]) -> tuple[int, int]:
@@ -121,32 +125,41 @@ def screen_reverser(screen_y: int, position: tuple[int, int]) -> tuple[int, int]
 def main(screen: Screen, sleep_time: float) -> None:
     game = GameModel(screen.height, screen.width)
     max_score = 0
+    destoroy_enemy_messages: list[tuple[int, str, tuple[int, int]]] = []
 
     while True:
         game.initialize_game(game.gamestate["screen_size"], enemy_count=40)
+        destoroy_enemy_messages.clear()
         while not game.is_game_over:
+            for i in reversed(range(len(destoroy_enemy_messages))):
+                count, message, position = destoroy_enemy_messages[i]
+                if count <= 0:
+                    destoroy_enemy_messages.pop(i)
+                else:
+                    destoroy_enemy_messages[i] = (count - 1, message, position)
+
             screen.clear_buffer(COLOUR_WHITE, 0, 0)
 
             player = player_strategys["midareuti"]
-            game.emuration_step(player.decide_action)
+            destroyed_enemies = game.emuration_step(player.decide_action)
 
-            screen.print_at(
-                f"Score: {sum(game.gamestate['scores'])}",
-                2,
-                0
-            )
+            for enemy, score in destroyed_enemies:
+                destoroy_enemy_messages.append((20, f"+{score}", screen_reverser(screen.height, enemy.position)))
 
-            screen.print_at(
-                f"Max Score: {max_score}",
-                20,
-                0
-            )
+            # スコア表示
+            screen.print_at(f"Score: {sum(game.gamestate['scores'])}", 2, 0)
+            screen.print_at(f"Max Score: {max_score}", 20, 0)
 
+            # ゲームの表示
             screen.print_at("A", *screen_reverser(screen.height, game.gamestate["player"]["position"]))
             for enemy in game.gamestate["enemies"]:
                 screen.print_at("M", *screen_reverser(screen.height, enemy.position))
             for bullet in game.gamestate["bullets"]:
                 screen.print_at("|", *screen_reverser(screen.height, bullet))
+
+            # 敵破壊メッセージの表示
+            for _, message, position in destoroy_enemy_messages:
+                screen.print_at(message, position[0], position[1])
 
             screen.refresh()
 

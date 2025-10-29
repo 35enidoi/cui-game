@@ -89,6 +89,11 @@ class GameModel:
         self.gamestate["bullets"] = new_bullets
 
 
+def screen_reverser(screen_y: int, position: tuple[int, int]) -> tuple[int, int]:
+    """スクリーンのy座標が逆なのでそれを反映するやつ"""
+    return position[0], abs(screen_y - position[1])
+
+
 def main(screen: Screen, sleep_time: float) -> None:
     game = GameModel(screen.height, screen.width)
     game.initialize_game((screen.width, screen.height))
@@ -103,16 +108,17 @@ def main(screen: Screen, sleep_time: float) -> None:
             0
         )
 
-        screen.print_at("A", *game.gamestate["player"]["position"])
+        screen.print_at("A", *screen_reverser(screen.height, game.gamestate["player"]["position"]))
         for enemy in game.gamestate["enemies"]:
-            screen.print_at("M", *enemy.position)
+            screen.print_at("M", *screen_reverser(screen.height, enemy.position))
         for bullet in game.gamestate["bullets"]:
-            screen.print_at("|", *bullet)
+            screen.print_at("|", *screen_reverser(screen.height, bullet))
 
         screen.refresh()
 
         sleep(sleep_time)
 
+    screen.close()
+
     print("Game Over! Your score:", sum(game.gamestate["scores"]))
 
-    screen.close()

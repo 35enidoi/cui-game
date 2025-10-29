@@ -32,9 +32,10 @@ class GameModel:
 
     def _enemy_initialization(self, screen_size: tuple[int, int], enemy_count: int) -> list[BaseEnemy]:
         screen_width, screen_height = screen_size
-        screen_positions = [
-            (x, screen_height - y) for x in range(screen_width) for y in range(10 if screen_height > 20 else screen_height // 4)
-        ]
+        screen_positions: list[tuple[int, int]] = []
+        for y in range(10 if screen_height > 20 else screen_height // 4):
+            for x in range(screen_width):
+                screen_positions.append((x, screen_height - y))
 
         shuffle(screen_positions)
 

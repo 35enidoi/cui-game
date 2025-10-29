@@ -7,6 +7,9 @@ if TYPE_CHECKING:
 
 PLAYER_ACTIONS = Literal["left", "right", "shoot", "none"]
 
+KEY_Q = 113
+KEY_LOWQ = 81
+
 
 class PlayerState(TypedDict):
     position: tuple[int, int]

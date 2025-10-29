@@ -42,6 +42,7 @@ class BaseEnemy(ABC):
 
 
 class BasePlayerStrategy(ABC):
+    name: str
     description: str
 
     def __init__(self) -> None:

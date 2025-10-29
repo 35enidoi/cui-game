@@ -5,6 +5,6 @@ from asciimatics.screen import Screen
 
 if __name__ == "__main__":
     try:
-        Screen.wrapper(main, arguments=[0.01])
+        Screen.wrapper(main)
     except KeyboardInterrupt:
         pass

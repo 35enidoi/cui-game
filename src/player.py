@@ -4,6 +4,8 @@ from src.type.abstracts import BasePlayerStrategy, BaseEnemy
 
 
 class TekitouStrategy(BasePlayerStrategy):
+    name = "Tekitou"
+
     def decide_action(self, game_state):
         enemies = game_state["enemies"]
         position = game_state["player"]["position"]
@@ -49,6 +51,8 @@ class TekitouStrategy(BasePlayerStrategy):
 
 
 class MidareutiStrategy(BasePlayerStrategy):
+    name = "Midareuti"
+
     def __init__(self) -> None:
         self.directions = ("left", "right")
         self.count = 0
@@ -65,7 +69,7 @@ class MidareutiStrategy(BasePlayerStrategy):
         return self.directions[self.direction_count % 2]
 
 
-player_strategys: dict[str, BasePlayerStrategy] = {
-    "tekitou": TekitouStrategy(),
-    "midareuti": MidareutiStrategy()
-}
+player_strategys: tuple[BasePlayerStrategy, ...] = (
+    TekitouStrategy(),
+    MidareutiStrategy(),
+)

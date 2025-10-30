@@ -16,10 +16,15 @@ class PlayerState(TypedDict):
     bullet_cooldown: int
 
 
-class GameState(TypedDict):
+class StageState(TypedDict):
     screen_size: tuple[int, int]
     deadline: int
-    player: PlayerState
     enemies: list["BaseEnemy"]
-    bullets: list[tuple[int, int]]
     scores: list[int]
+    max_score: int
+    bullets: list[tuple[int, int]]
+
+
+class GameState(TypedDict):
+    stage: StageState
+    player: PlayerState

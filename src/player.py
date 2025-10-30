@@ -90,7 +90,7 @@ class PredictStrategy(BasePlayerStrategy):
 
     def decide_action(self, game_state):
         player_position = game_state["player"]["position"]
-        screen_size = game_state["screen_size"]
+        screen_size = game_state["stage"]["screen_size"]
 
         for index, (bullet_y, enemy_id) in enumerate(self.shooted_enemys):
             if bullet_y - player_position[1] <= 0:
@@ -98,7 +98,7 @@ class PredictStrategy(BasePlayerStrategy):
             else:
                 self.shooted_enemys[index] = (bullet_y - 1, enemy_id)
 
-        enemy = self._target_enemy(game_state["enemies"], game_state["player"]["position"], screen_size)
+        enemy = self._target_enemy(game_state["stage"]["enemies"], game_state["player"]["position"], screen_size)
 
         if enemy is None:
             return "none"
@@ -137,7 +137,9 @@ class MidareutiStrategy(BasePlayerStrategy):
         if self.count % 2:
             return "shoot"
 
-        if game_state["player"]["position"][0] == 0 or game_state["player"]["position"][0] == game_state["screen_size"][0] - 1:
+        player_x = game_state["player"]["position"][0]
+        screen_x = game_state["stage"]["screen_size"][0]
+        if player_x == 0 or player_x == screen_x - 1:
             self.direction_count += 1
 
         return self.directions[self.direction_count % 2]

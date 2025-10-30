@@ -2,12 +2,13 @@ from time import sleep
 from typing import cast
 
 from asciimatics.screen import Screen
-from asciimatics.constants import COLOUR_WHITE
+from asciimatics.constants import COLOUR_WHITE, COLOUR_RED
 from asciimatics.event import KeyboardEvent
 
 from src.player import player_strategys
 from src.type.constants import KEY_Q, KEY_LOWQ
 from src.game import GameModel
+from src.stage import InvaderStage
 
 
 def main(screen: Screen, init_strategy: int) -> None:
@@ -16,14 +17,15 @@ def main(screen: Screen, init_strategy: int) -> None:
         screen.clear_buffer(COLOUR_WHITE, 0, 0)
 
         # デッドラインの表示
-        screen.move(*GameModel.screen_reverser(screen.height, (0, game.gamestate["deadline"])))
-        screen.draw(*GameModel.screen_reverser(screen.height, (screen.width, game.gamestate["deadline"])), char="-", colour=1)
+        deadline_y = game.gamestate["stage"]["deadline"]
+        screen.move(*GameModel.screen_reverser(screen.height, (0, deadline_y)))
+        screen.draw(*GameModel.screen_reverser(screen.height, (screen.width, deadline_y)), char="-", colour=COLOUR_RED)
 
         # ゲームの表示
         screen.print_at("A", *GameModel.screen_reverser(screen.height, game.gamestate["player"]["position"]))
-        for enemy in game.gamestate["enemies"]:
+        for enemy in game.gamestate["stage"]["enemies"]:
             screen.print_at(enemy.char, *GameModel.screen_reverser(screen.height, enemy.position))
-        for bullet in game.gamestate["bullets"]:
+        for bullet in game.gamestate["stage"]["bullets"]:
             screen.print_at("|", *GameModel.screen_reverser(screen.height, bullet))
 
         # 敵破壊メッセージの表示
@@ -31,17 +33,17 @@ def main(screen: Screen, init_strategy: int) -> None:
             screen.print_at(message, position[0], position[1])
 
         # ゲーム情報関係の表示
-        screen.print_at(f"Score: {sum(game.gamestate['scores'])}", 2, screen.height - 2)
-        screen.print_at(f"Max Score: {max_score}", 2, screen.height - 3)
-        screen.print_at(f"Enemies: {len(game.gamestate['enemies'])}", 20, screen.height - 2)
+        screen.print_at(f"Score: {sum(game.gamestate['stage']['scores'])}", 2, screen.height - 2)
+        screen.print_at(f"Max Score: {game.gamestate['stage']['max_score']}", 2, screen.height - 3)
+        screen.print_at(f"Enemies: {len(game.gamestate['stage']['enemies'])}", 20, screen.height - 2)
         screen.print_at(f"Clock Time: {round(clock_time * 0.01, 2)}", 20, screen.height - 3)
         screen.print_at(f"Strategy: {player_strategys[strategy].name}", 40, screen.height - 2)
         screen.print_at("Press Q to quit.", screen.width - 20, screen.height - 2)
 
         screen.refresh()
 
-    game = GameModel(screen.height, screen.width)
-    max_score = 0
+    stage = InvaderStage((screen.width, screen.height))
+    game = GameModel(stage)
     destoroy_enemy_messages: list[tuple[int, str, tuple[int, int]]] = []
     max_sleep_time = 50
     minimum_sleep_time = 1
@@ -50,7 +52,7 @@ def main(screen: Screen, init_strategy: int) -> None:
     clock = 0
 
     while True:
-        game.initialize_game(game.gamestate["screen_size"])
+        game.initialize_game()
         destoroy_enemy_messages.clear()
         while not game.is_game_over:
             clock += 1
@@ -83,7 +85,7 @@ def main(screen: Screen, init_strategy: int) -> None:
             if isinstance(event, KeyboardEvent):
                 if event.key_code in (KEY_Q, KEY_LOWQ):
                     screen.close()
-                    print("Game Over! Your max score:", max_score)
+                    print("Game Over! Your max score:", game.gamestate["stage"]["max_score"])
                     return
                 elif event.key_code == Screen.KEY_UP:
                     clock_time = min(max_sleep_time, clock_time + 1)
@@ -101,5 +103,3 @@ def main(screen: Screen, init_strategy: int) -> None:
                     draw()
 
             sleep(1 / 100)  # 1 clock = 10ms
-
-        max_score = sum(game.gamestate["scores"]) if sum(game.gamestate["scores"]) > max_score else max_score

@@ -85,7 +85,7 @@ class GameModel:
         for bullet in self.gamestate["bullets"]:
             new_bullet_y = bullet[1] + 1
 
-            if new_bullet_y >= self.gamestate["screen_size"][1]:
+            if new_bullet_y >= self.gamestate["screen_size"][1] + 1:
                 # 画面外に出た弾は削除
                 continue
 

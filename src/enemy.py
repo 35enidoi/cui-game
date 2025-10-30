@@ -1,3 +1,5 @@
+from random import choice
+
 from src.type.abstracts import BaseEnemy
 
 
@@ -7,7 +9,7 @@ class InvaderEnemy(BaseEnemy):
         self.move_count = 3
         self.hitpoint = 10
         self.position = (x_position, y_position)
-        self.move_direction = "down"
+        self.move_direction = choice(("left", "right"))
         self.move_distance = 1
         self.base_score = 100
 

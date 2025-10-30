@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from src.type.abstracts import BasePlayerStrategy, BaseEnemy
 
 
@@ -11,26 +9,31 @@ class PredictStrategy(BasePlayerStrategy):
 
     name = "Predict"
 
-    def target_enemy(self, enemies: list[BaseEnemy], player_position: tuple[int, int]) -> BaseEnemy | None:
-        for enemy in enemies:
-            if enemy.id == self.target_enemy_id:
-                return enemy
-        else:
-            enemy_key_x = defaultdict(list)
-            for e in enemies:
-                if e.id not in [se[1] for se in self.shooted_enemys]:
-                    enemy_key_x[e.position[0]].append(e)
+    def target_enemy(
+        self,
+        enemies: list[BaseEnemy],
+        player_position: tuple[int, int],
+        screen_size: tuple[int, int],
+    ) -> BaseEnemy | None:
+        # すでに撃った(弾が上昇中の)敵は除外し、交差予測に基づき最も横移動距離の少ない敵を選ぶ
+        shot_ids = {enemy_id for _, enemy_id in self.shooted_enemys}
+        candidates: list[tuple[tuple[int, int, int], BaseEnemy]] = []
+        for e in enemies:
+            if e.id in shot_ids:
+                continue
+            pred_x, pred_bullet_y = self._predict_intersection_x(e, player_position[1], screen_size)
+            dx = abs(pred_x - player_position[0])                 # 交差時点の必要横移動距離
+            eta = max(0, pred_bullet_y - player_position[1])      # 到達までのフレーム数(小さい方を優先)
+            # tie-breaker: 高い位置(画面上側)の敵ほど優先度を下げる/上げる等は設計次第。ここでは手前(大きいy)優先。
+            tie = -e.position[1]
+            candidates.append(((dx, eta, tie), e))
 
-            if not enemy_key_x:
-                return None
+        if not candidates:
+            return None
 
-            near_x = min(enemy_key_x.keys(), key=lambda x: abs(x - player_position[0]))
-
-            most_near_enemy = min(enemy_key_x[near_x], key=lambda e: abs(e.position[1] - player_position[1]))
-
-            self.target_enemy_id = most_near_enemy.id
-
-            return most_near_enemy
+        best = min(candidates, key=lambda x: x[0])[1]
+        self.target_enemy_id = best.id
+        return best
 
     def _predict_intersection_x(self, enemy: BaseEnemy, player_y: int, screen_size: tuple[int, int]) -> tuple[int, int]:
         """弾がplayer_yから上昇し、敵と同じyに到達する時点の敵xをシミュレーションで求める。
@@ -85,7 +88,7 @@ class PredictStrategy(BasePlayerStrategy):
             else:
                 self.shooted_enemys[index] = (bullet_y - 1, enemy_id)
 
-        enemy = self.target_enemy(game_state["enemies"], game_state["player"]["position"])
+        enemy = self.target_enemy(game_state["enemies"], game_state["player"]["position"], screen_size)
 
         if enemy is None:
             return "none"

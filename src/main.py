@@ -34,7 +34,7 @@ def main(screen: Screen) -> None:
         screen.print_at(f"Score: {sum(game.gamestate['scores'])}", 2, screen.height - 2)
         screen.print_at(f"Max Score: {max_score}", 2, screen.height - 3)
         screen.print_at(f"Enemies: {len(game.gamestate['enemies'])}", 20, screen.height - 2)
-        screen.print_at(f"Clock Time: {clock_time * 0.01}", 20, screen.height - 3)
+        screen.print_at(f"Clock Time: {round(clock_time * 0.01, 2)}", 20, screen.height - 3)
         screen.print_at(f"Strategy: {player_strategys[strategy].name}", 40, screen.height - 2)
         screen.print_at("Press Q to quit.", screen.width - 20, screen.height - 2)
 

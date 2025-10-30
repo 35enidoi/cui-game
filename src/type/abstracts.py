@@ -52,3 +52,6 @@ class BasePlayerStrategy(ABC):
     @abstractmethod
     def decide_action(self, game_state: "GameState") -> PLAYER_ACTIONS:
         raise NotImplementedError
+
+    def reset(self) -> None:
+        pass

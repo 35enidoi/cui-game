@@ -93,9 +93,11 @@ def main(screen: Screen) -> None:
                     draw()
                 elif event.key_code == Screen.KEY_RIGHT:
                     strategy = (strategy + 1) % len(player_strategys)
+                    player_strategys[strategy].reset()
                     draw()
                 elif event.key_code == Screen.KEY_LEFT:
                     strategy = (strategy - 1) % len(player_strategys)
+                    player_strategys[strategy].reset()
                     draw()
 
             sleep(1 / 100)  # 1 clock = 10ms

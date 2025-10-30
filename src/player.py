@@ -9,12 +9,22 @@ class PredictStrategy(BasePlayerStrategy):
 
     name = "Predict"
 
-    def target_enemy(
+    def reset(self) -> None:
+        self.target_enemy_id = None
+        self.shooted_enemys.clear()
+
+    def _target_enemy(
         self,
         enemies: list[BaseEnemy],
         player_position: tuple[int, int],
         screen_size: tuple[int, int],
     ) -> BaseEnemy | None:
+        # すでにターゲットにしている敵がいればそれを返す
+        if self.target_enemy_id is not None:
+            for e in enemies:
+                if e.id == self.target_enemy_id:
+                    return e
+
         # すでに撃った(弾が上昇中の)敵は除外し、交差予測に基づき最も横移動距離の少ない敵を選ぶ
         shot_ids = {enemy_id for _, enemy_id in self.shooted_enemys}
         candidates: list[tuple[tuple[int, int, int], BaseEnemy]] = []
@@ -88,7 +98,7 @@ class PredictStrategy(BasePlayerStrategy):
             else:
                 self.shooted_enemys[index] = (bullet_y - 1, enemy_id)
 
-        enemy = self.target_enemy(game_state["enemies"], game_state["player"]["position"], screen_size)
+        enemy = self._target_enemy(game_state["enemies"], game_state["player"]["position"], screen_size)
 
         if enemy is None:
             return "none"
@@ -115,6 +125,10 @@ class MidareutiStrategy(BasePlayerStrategy):
 
     def __init__(self) -> None:
         self.directions = ("left", "right")
+        self.count = 0
+        self.direction_count = 0
+
+    def reset(self) -> None:
         self.count = 0
         self.direction_count = 0
 

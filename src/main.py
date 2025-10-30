@@ -50,7 +50,7 @@ def main(screen: Screen) -> None:
     clock = 0
 
     while True:
-        game.initialize_game(game.gamestate["screen_size"], enemy_count=40)
+        game.initialize_game(game.gamestate["screen_size"])
         destoroy_enemy_messages.clear()
         while not game.is_game_over:
             clock += 1

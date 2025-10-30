@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from random import shuffle
 
 from src.type.constants import PLAYER_ACTIONS, GameState
@@ -13,7 +13,7 @@ class GameModel:
             screen_width: int) -> None:
         self.initialize_game((screen_width, screen_height))
 
-    def initialize_game(self, screen_size: tuple[int, int], enemy_count=10) -> None:
+    def initialize_game(self, screen_size: tuple[int, int], enemy_count: Optional[int] = None) -> None:
         self.gamestate: GameState = {
             "screen_size": screen_size,
             "deadline": 10,
@@ -26,8 +26,12 @@ class GameModel:
             "scores": []
         }
 
-    def _enemy_initialization(self, screen_size: tuple[int, int], enemy_count: int) -> list[BaseEnemy]:
+    def _enemy_initialization(self, screen_size: tuple[int, int], enemy_count: Optional[int] = None) -> list[BaseEnemy]:
         screen_width, screen_height = screen_size
+
+        if enemy_count is None:
+            enemy_count = screen_height * (screen_height // 4) // 5
+
         screen_positions: list[tuple[int, int]] = []
         for y in range(10 if screen_height > 20 else screen_height // 4):
             for x in range(screen_width):

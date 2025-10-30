@@ -84,6 +84,7 @@ class BaseGameStage(ABC):
 
     def stage_reset(self) -> None:
         self.stage_state["enemies"] = self.enemy_initialization()
+        self.stage_state["bullets"].clear()
         self.stage_state["max_score"] = max(self.stage_state["max_score"], sum(self.stage_state["scores"]))
         self.stage_state["scores"].clear()
 

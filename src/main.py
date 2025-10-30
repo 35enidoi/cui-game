@@ -22,7 +22,7 @@ def main(screen: Screen) -> None:
         # ゲームの表示
         screen.print_at("A", *GameModel.screen_reverser(screen.height, game.gamestate["player"]["position"]))
         for enemy in game.gamestate["enemies"]:
-            screen.print_at("M", *GameModel.screen_reverser(screen.height, enemy.position))
+            screen.print_at(enemy.char, *GameModel.screen_reverser(screen.height, enemy.position))
         for bullet in game.gamestate["bullets"]:
             screen.print_at("|", *GameModel.screen_reverser(screen.height, bullet))
 

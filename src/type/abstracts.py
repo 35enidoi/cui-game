@@ -14,6 +14,7 @@ class BaseEnemy(ABC):
     move_distance: int
     move_count: int
     base_score: int
+    char: str
 
     _moved_count: int
     _id: str

@@ -13,6 +13,13 @@ class InvaderEnemy(BaseEnemy):
         self.move_distance = 1
         self.base_score = 100
 
+    @property
+    def char(self) -> str:
+        if self._moved_count % 2:
+            return "M"
+        else:
+            return "W"
+
     def _move(self, width: int) -> None:
         x, y = self.position
         match self.move_direction:

@@ -10,7 +10,7 @@ from src.type.constants import KEY_Q, KEY_LOWQ
 from src.game import GameModel
 
 
-def main(screen: Screen) -> None:
+def main(screen: Screen, init_strategy: int) -> None:
     def draw():
         # 画面クリア
         screen.clear_buffer(COLOUR_WHITE, 0, 0)
@@ -45,7 +45,7 @@ def main(screen: Screen) -> None:
     destoroy_enemy_messages: list[tuple[int, str, tuple[int, int]]] = []
     max_sleep_time = 50
     minimum_sleep_time = 1
-    strategy = 0
+    strategy = init_strategy
     clock_time = 1
     clock = 0
 
